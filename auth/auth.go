@@ -1,7 +1,12 @@
 package auth
+
 // pacote utilizado para todas as operações relacionadas
 // com autenticação de usuário, geração e checagem de token
-import  "github.com/golang-jwt/jwt/v5"
+import (
+	"slices"
+
+	"github.com/golang-jwt/jwt/v5"
+)
 
 // chave secreta para criptografia do token
 var secret = "chave_secreta"
@@ -10,15 +15,14 @@ var secret = "chave_secreta"
 type user struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Role 	 string	`json:"role"`
+	Role     string `json:"role"`
 }
 
 // lista de usuarios "hard-coded"
 var users = []user{
-	{Username: "test", Password: "test", Role: ""},
+	{Username: "test", Password: "test", Role: "user"},
 	{Username: "admin", Password: "admin", Role: "admin"},
 }
-
 
 func GenerateToken(username string, role string) string {
 	// Faz os claims pelo jwt para criar o token com eles
@@ -27,7 +31,7 @@ func GenerateToken(username string, role string) string {
 	// testes
 	claims := jwt.MapClaims{
 		"username": username,
-		"role":    role,
+		"role":     role,
 	}
 
 	// Gera o token a partir dos claims, assina em HS256
@@ -44,11 +48,11 @@ func GenerateToken(username string, role string) string {
 
 func LogUser(username string, password string) (string, bool) {
 
-// Loop para procurar usuario e senha corretos
+	// Loop para procurar usuario e senha corretos
 	for _, a := range users {
 		if a.Username == username && a.Password == password {
 			// Obtem o cargo do usuario para gerar o token
-			var role = a.Role;
+			var role = a.Role
 			// Gera o token a partir do usuario dado
 			sign_token := GenerateToken(username, role)
 
@@ -64,7 +68,7 @@ func LogUser(username string, password string) (string, bool) {
 	return "user not found or wrong password", false
 }
 
-func CheckToken(tokenString string, role string) (string, bool) {
+func CheckToken(tokenString string, roles []string) (string, bool) {
 	// Usa jwt.Parse para obter as informacoes do token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -89,7 +93,7 @@ func CheckToken(tokenString string, role string) (string, bool) {
 			return "role sign not valid", false
 		}
 		// Se precisar de cargo e nao tiver, retorna que nao esta autorizado
-		if tknRole != role && role != "" {
+		if slices.Contains(roles, tknRole) && len(roles) > 0 {
 			return "token does not have required role", false
 		}
 		// Estando tudo ok, retorna que a checagem deu certo

@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"engsoft/auth"
 
-	"0.0.0.0/auth"
+	"github.com/gin-gonic/gin"
 )
 
 // struct com informacoes dos albums, tudo com parametros json
@@ -49,7 +49,7 @@ var albums = []album{
 // getAlbums responds with the list of all albums as JSON.
 func getAlbums(c *gin.Context) {
 	// Faz o teste do token | Nao precisa de acesso de administrador
-	if !checkToken(c, "") {
+	if !checkToken(c, []string{}) {
 		return
 	}
 	// Retorna a lista de albums
@@ -59,7 +59,7 @@ func getAlbums(c *gin.Context) {
 // getAlbumByID - Acha um album pelo ID dado e exibe
 func getAlbumByID(c *gin.Context) {
 	// Faz o teste do token | Nao precisa de acesso de administrador
-	if !checkToken(c, "") {
+	if !checkToken(c, []string{}) {
 		return
 	}
 
@@ -80,7 +80,7 @@ func getAlbumByID(c *gin.Context) {
 // postAlbums adds an album from JSON received in the request body.
 func postAlbums(c *gin.Context) {
 	// Faz o teste do token | Precisa de acesso de administrador
-	if !checkToken(c, "admin") {
+	if !checkToken(c, []string{"admin"}) {
 		return
 	}
 
@@ -98,7 +98,7 @@ func postAlbums(c *gin.Context) {
 
 func putAlbumID(c *gin.Context) {
 	// Faz o teste do token | Precisa de acesso de administrador
-	if !checkToken(c, "admin") {
+	if !checkToken(c, []string{"admin"}) {
 		return
 	}
 
@@ -137,7 +137,7 @@ func putAlbumID(c *gin.Context) {
 
 func deleteAlbumID(c *gin.Context) {
 	// Faz o teste do token | Precisa de acesso de administrador
-	if !checkToken(c, "admin") {
+	if !checkToken(c, []string{"admin"}) {
 		return
 	}
 
@@ -191,7 +191,7 @@ func postAuth(c *gin.Context) {
 
 // Faz a checagem to token | Alteração: converter role string em roles string[],
 // pois tem funcoes que podem ser acessadas por mais de um cargo (24/06)
-func checkToken(c *gin.Context, role string) bool {
+func checkToken(c *gin.Context, roles []string) bool {
 	// Pega o token pelo header de autorizacao
 	tokenString := c.GetHeader("Authorization")
 
@@ -201,7 +201,7 @@ func checkToken(c *gin.Context, role string) bool {
 		return false
 	}
 
-	msg, ok := auth.CheckToken(tokenString, role)
+	msg, ok := auth.CheckToken(tokenString, roles)
 
 	if !ok {
 		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
