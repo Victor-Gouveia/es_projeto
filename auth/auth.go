@@ -46,8 +46,12 @@ func GenerateToken(username string, role string) string {
 	return tokenString
 }
 
-func LogUser(username string, password string) (string, bool) {
+func CreateUser(username string, password string, role string) {
+	var newUser user = user{Username: username, Password: password, Role: role}
+	users = append(users, newUser)
+}
 
+func LogUser(username string, password string) (string, bool) {
 	// Loop para procurar usuario e senha corretos
 	for _, a := range users {
 		if a.Username == username && a.Password == password {
@@ -68,6 +72,7 @@ func LogUser(username string, password string) (string, bool) {
 	return "user not found or wrong password", false
 }
 
+// usando array "roles" pois havera acoes que podem ter permissao de mais de um tipo de usuario (exemplo: )
 func CheckToken(tokenString string, roles []string) (string, bool) {
 	// Usa jwt.Parse para obter as informacoes do token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {

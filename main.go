@@ -6,6 +6,8 @@ import (
 	"engsoft/auth"
 
 	"github.com/gin-gonic/gin"
+
+	"engsoft/services"
 )
 
 // struct com informacoes dos albums, tudo com parametros json
@@ -29,6 +31,13 @@ func main() {
 	//DELETE
 	router.DELETE("/albums/:id", deleteAlbumID)
 
+	//Funcoes da aplicacao final real oficial
+	//GET
+	router.GET("/clientes", getClientes)
+
+	//POST
+	router.POST("/clientes/novo", postCliente)
+
 	// roda o servidor localmente
 	router.Run("localhost:8080")
 
@@ -37,6 +46,27 @@ func main() {
 	// VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 	// admin := router.group("/")
 	// admin.Use(*Funcao para autenticar*){*rotas de admin aqui*}
+}
+
+func getClientes(c *gin.Context) {
+	var clientes = services.ListarClientes()
+	c.IndentedJSON(http.StatusOK, clientes)
+}
+
+func postCliente(c *gin.Context) {
+	var newCliente services.Cliente
+
+	if err := c.BindJSON(&newCliente); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "failed to obtain client"})
+		return
+	}
+
+	if err := services.CriarCliente(newCliente); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusCreated, newCliente)
 }
 
 // albums definidos "hard-coded"
