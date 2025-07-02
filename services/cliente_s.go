@@ -78,7 +78,9 @@ func SolicitarAtendimento(a Atendimento) error {
 	if _, existe := atendimentos[a.ID]; existe {
 		return fmt.Errorf("atendimento com ID %d já existe", a.ID)
 	}
-
+	if _, ok := LerCliente(a.ClienteID); !ok {
+		return fmt.Errorf("cliente com ID %d nao encontrado", a.ClienteID)
+	}
 	// Define o status padrão para uma solicitação
 	a.Status = "Solicitado"
 	atendimentos[a.ID] = a

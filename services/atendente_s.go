@@ -2,7 +2,6 @@
 package services
 
 import "fmt"
-import "time"
 
 // --- Use Case: Gerenciar Atendimentos (CRUD) ---
 // (Usado por Atendente e Gerente)
@@ -20,9 +19,6 @@ func AtualizarAtendimento(id int, status string, medicoID int) bool {
 	if a, ok := atendimentos[id]; ok {
 		a.Status = status
 		a.MedicoID = medicoID
-		if status == "Agendado" {
-			a.Data = time.Now().Add(24 * time.Hour) // Reagenda para o dia seguinte
-		}
 		atendimentos[id] = a
 		fmt.Printf("Atendimento %d atualizado para status '%s'.\n", id, status)
 		return true

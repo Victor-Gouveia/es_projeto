@@ -37,6 +37,10 @@ func main() {
 
 	//POST
 	router.POST("/clientes/novo", postCliente)
+	router.POST("/atendimentos/novo", postAtend)
+	//PUT
+
+	//DELETE
 
 	// roda o servidor localmente
 	router.Run("localhost:8080")
@@ -48,6 +52,7 @@ func main() {
 	// admin.Use(*Funcao para autenticar*){*rotas de admin aqui*}
 }
 
+// Funcoes para lidar com clientes
 func getClientes(c *gin.Context) {
 	var clientes = services.ListarClientes()
 	c.IndentedJSON(http.StatusOK, clientes)
@@ -67,6 +72,21 @@ func postCliente(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusCreated, newCliente)
+}
+
+// funcoes para atendimentos
+func postAtend(c *gin.Context) {
+	var newAtend services.Atendimento
+	if err := c.BindJSON(&newAtend); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "failed to obtain apointment"})
+		return
+	}
+	if err := services.SolicitarAtendimento(newAtend); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusCreated, newAtend)
 }
 
 // albums definidos "hard-coded"
