@@ -23,9 +23,9 @@ type user struct {
 
 // lista de usuarios "hard-coded"
 var users = []user{
-	{Username: "test", Password: "test", Role: "user", ID: 1},			// "João Silva"
+	{Username: "test", Password: "test", Role: "user", ID: 1}, // "João Silva"
 	{Username: "atende", Password: "atende", Role: "atende"},
-	{Username: "medico", Password: "medico", Role: "medico", ID: 92}, 	// "Dra. Lucia Ferreira"
+	{Username: "medico", Password: "medico", Role: "medico", ID: 92}, // "Dra. Lucia Ferreira"
 	{Username: "gerent", Password: "gerent", Role: "gerent"},
 }
 
@@ -37,7 +37,7 @@ func GenerateToken(username string, role string, id int) string {
 	claims := jwt.MapClaims{
 		"username": username,
 		"role":     role,
-		"id":		id,
+		"id":       id,
 	}
 
 	// Gera o token a partir dos claims, assina em HS256
@@ -52,18 +52,20 @@ func GenerateToken(username string, role string, id int) string {
 	return tokenString
 }
 
+//var cert_roles = []string{"user", "atende", "medico", "gerent"} // lista de cargos para conferir ao criar novo usuario
+
 func CreateUser(username string, password string, role string) {
 	var id = 0
-	switch role{
-		case "user":
-			id = services.MaiorIDCliente() + 1
-			
-		case "medico":
-			id = services.MaiorIDMedico() + 1
-			
-		default:
+	switch role {
+	case "user":
+		id = services.MaiorIDCliente() + 1
+
+	case "medico":
+		id = services.MaiorIDMedico() + 1
+
+	default:
 	}
-	
+
 	var newUser user = user{Username: username, Password: password, Role: role, ID: id}
 	users = append(users, newUser)
 }
@@ -111,17 +113,17 @@ func CheckToken(tokenString string, roles []string) (string, bool) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		// Primeiro, testa se a informacao de admin esta correta
 		tknRole, ok := claims["role"].(string)
-		if !ok {
+		if !ok { // confere se houve erro ao obter cargo ou se nao eh um cargo valido
 			// Se nao for valido o cargo, retorna o erro ao usuario
-			return "role sign not valid", false
+			return "unauthorized: token role sign not valid", false
 		}
 		// Se precisar de cargo e nao tiver, retorna que nao esta autorizado
-		if slices.Contains(roles, tknRole) && len(roles) > 0 {
-			return "token does not have required role", false
+		if !slices.Contains(roles, tknRole) && len(roles) > 0 {
+			return "unauthorized: token does not have required role", false
 		}
 		// Estando tudo ok, retorna que a checagem deu certo
 		return "", true
 	}
 	// Erro inesperado, esta aqui de fallback, nao deve ocorrer
-	return "there was an issue validating your token", false
+	return "unauthorized: there was an issue validating your token", false
 }

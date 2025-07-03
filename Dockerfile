@@ -20,7 +20,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app/main .
 
 
 # Decidiu usar 'alpine' por ser uma imagem base mínima.
-FROM alpine:latest
+FROM alpine:3.22.0
 
 # Define o diretório de trabalho
 WORKDIR /app

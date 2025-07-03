@@ -64,8 +64,7 @@ func main() {
 
 // Funcao para listar clientes
 func getClientes(c *gin.Context) {
-	if !checkToken(c, []string{"user", "atende", "medico", "gerent"}) { // qualquer um pode pesquisar clientes (passivel de alteracao)
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
+	if !checkToken(c, []string{}) { // qualquer um pode pesquisar clientes (passivel de alteracao)
 		return
 	}
 	var clientes = services.ListarClientes()
@@ -75,8 +74,7 @@ func getClientes(c *gin.Context) {
 // lista cliente pelo id
 func getClientesID(c *gin.Context) {
 
-	if !checkToken(c, []string{"user", "atende", "medico", "gerent"}) { // qualquer um pode pesquisar cliente por id
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
+	if !checkToken(c, []string{}) { // qualquer um pode pesquisar cliente por id
 		return
 	}
 	id := c.Param("id")
@@ -97,7 +95,6 @@ func postCliente(c *gin.Context) {
 	var newCliente services.Cliente
 
 	if !checkToken(c, []string{"user", "atende", "gerent"}) { // medicos nao podem enviar dados do cliente
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 
@@ -116,7 +113,6 @@ func postCliente(c *gin.Context) {
 
 func putCliente(c *gin.Context) {
 	if !checkToken(c, []string{"user", "atende", "gerent"}) { // medicos nao podem atualizar dados do cliente
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 
@@ -141,7 +137,6 @@ func putCliente(c *gin.Context) {
 
 func delCliente(c *gin.Context) {
 	if !checkToken(c, []string{"user", "atende", "gerent"}) { // medicos nao podem apagar dados do cliente
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 	id := c.Param("id")
@@ -161,7 +156,6 @@ func delCliente(c *gin.Context) {
 // Funcao para listar clientes
 func getMedicos(c *gin.Context) {
 	if !checkToken(c, []string{"user", "atende", "medico", "gerent"}) { // qualquer um pode pesquisar medicos (passivel de alteracao)
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 	var medicos = services.ListarMedicos()
@@ -171,7 +165,6 @@ func getMedicos(c *gin.Context) {
 // lista cliente pelo id
 func getMedicosID(c *gin.Context) {
 	if !checkToken(c, []string{"user", "atende", "medico", "gerent"}) { // qualquer um pode pesquisar medicos por id
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 
@@ -194,7 +187,6 @@ func postMedico(c *gin.Context) {
 	var newMedico services.Medico
 
 	if !checkToken(c, []string{"medico", "gerent"}) { // apenas medicos e gerentes podem enviar dados de medicos
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 
@@ -213,7 +205,6 @@ func postMedico(c *gin.Context) {
 
 func putMedico(c *gin.Context) {
 	if !checkToken(c, []string{"medico", "gerent"}) { // apenas medicos e gerentes podem alterar dados de medicos
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 
@@ -239,7 +230,6 @@ func putMedico(c *gin.Context) {
 
 func delMedico(c *gin.Context) {
 	if !checkToken(c, []string{"gerent"}) { // apenas gerentes podem deletar dados de medicos
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 	id := c.Param("id")
@@ -259,7 +249,6 @@ func delMedico(c *gin.Context) {
 // funcoes para atendimentos
 func postAtend(c *gin.Context) {
 	if !checkToken(c, []string{"user", "atende", "gerent"}) { // medicos nao podem solicitar atendimentos (passivel de alteracao)
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 	var newAtend services.Atendimento
@@ -278,7 +267,6 @@ func postAtend(c *gin.Context) {
 // lista todos os atendimentos
 func getAtends(c *gin.Context) {
 	if !checkToken(c, []string{"atende", "gerent"}) { // apenas atendentes e gerentes podem ler todos os atendimentos
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 
@@ -288,8 +276,7 @@ func getAtends(c *gin.Context) {
 
 // lista atendimentos por id de cliente
 func getAtendsCliente(c *gin.Context) {
-	if !checkToken(c, []string{"user","atende", "gerent"}) { // apenas medicos nao podem ver atendimentos por cliente
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
+	if !checkToken(c, []string{"user", "atende", "gerent"}) { // apenas medicos nao podem ver atendimentos por cliente
 		return
 	}
 
@@ -306,7 +293,6 @@ func getAtendsCliente(c *gin.Context) {
 // lista atendimentos por id de medico
 func getAtendsMedico(c *gin.Context) {
 	if !checkToken(c, []string{"medico", "atende", "gerent"}) { // apenas usuarios nao podem ver atendimentos por medico
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 
@@ -322,7 +308,6 @@ func getAtendsMedico(c *gin.Context) {
 
 func putAtend(c *gin.Context) {
 	if !checkToken(c, []string{"atende", "gerent"}) { // apenas atendentes e gerentes podem alterar atendimentos
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 	id := c.Param("id")
@@ -346,7 +331,6 @@ func putAtend(c *gin.Context) {
 
 func delAtend(c *gin.Context) {
 	if !checkToken(c, []string{"atende", "gerent"}) { // apenas atendentes e gerentes podem remover atendimentos
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 	id := c.Param("id")
@@ -366,7 +350,6 @@ func delAtend(c *gin.Context) {
 // cria um documento
 func postDoc(c *gin.Context) {
 	if !checkToken(c, []string{"medico", "gerent"}) { // apenas medicos e gerentes podem adicionar documentos
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 
@@ -386,8 +369,7 @@ func postDoc(c *gin.Context) {
 
 // lista todos os documentos
 func getDocs(c *gin.Context) {
-	if !checkToken(c, []string{"medico","gerent"}) { // apenas medicos e gerentes podem ver todos os documentos (passivel de alteracao)
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
+	if !checkToken(c, []string{"medico", "gerent"}) { // apenas medicos e gerentes podem ver todos os documentos (passivel de alteracao)
 		return
 	}
 
@@ -397,8 +379,7 @@ func getDocs(c *gin.Context) {
 
 // lista documentos por id de cliente
 func getDocsCliente(c *gin.Context) {
-	if !checkToken(c, []string{"user", "atende","medico", "gerent"}) { // qualquer um pode ver documentos pelo cliente
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
+	if !checkToken(c, []string{"user", "atende", "medico", "gerent"}) { // qualquer um pode ver documentos pelo cliente
 		return
 	}
 	id := c.Param("id")
@@ -414,7 +395,6 @@ func getDocsCliente(c *gin.Context) {
 // lista documentos por id de medico
 func getDocsMedico(c *gin.Context) {
 	if !checkToken(c, []string{"atende", "medico", "gerent"}) { // apenas clientes nao podem ver documentos por medico
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 	id := c.Param("id")
@@ -429,7 +409,6 @@ func getDocsMedico(c *gin.Context) {
 
 func putDoc(c *gin.Context) {
 	if !checkToken(c, []string{"medico", "gerent"}) { // apenas medicos e gerentes podem alterar documentos
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 	id := c.Param("id")
@@ -453,7 +432,6 @@ func putDoc(c *gin.Context) {
 
 func delDoc(c *gin.Context) {
 	if !checkToken(c, []string{"medico", "gerent"}) { // apenas medicos e gerentes podem remover documentos
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 	id := c.Param("id")
@@ -529,7 +507,7 @@ func checkToken(c *gin.Context, roles []string) bool {
 	}
 
 	msg, ok := auth.CheckToken(tokenString, roles)
-
+	
 	if !ok {
 		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 	}
