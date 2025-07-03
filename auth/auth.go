@@ -6,6 +6,8 @@ import (
 	"slices"
 
 	"github.com/golang-jwt/jwt/v5"
+
+	"engsoft/services"
 )
 
 // chave secreta para criptografia do token
@@ -16,15 +18,18 @@ type user struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Role     string `json:"role"`
+	ID       int    `json:"id"`
 }
 
 // lista de usuarios "hard-coded"
 var users = []user{
-	{Username: "test", Password: "test", Role: "user"},
-	{Username: "admin", Password: "admin", Role: "admin"},
+	{Username: "test", Password: "test", Role: "user", ID: 1},			// "João Silva"
+	{Username: "atende", Password: "atende", Role: "atende"},
+	{Username: "medico", Password: "medico", Role: "medico", ID: 92}, 	// "Dra. Lucia Ferreira"
+	{Username: "gerent", Password: "gerent", Role: "gerent"},
 }
 
-func GenerateToken(username string, role string) string {
+func GenerateToken(username string, role string, id int) string {
 	// Faz os claims pelo jwt para criar o token com eles
 	// OBS: Idealmente teria a data de expiracao do token,
 	// mas nao coloquei para simplificar implementação e
@@ -32,6 +37,7 @@ func GenerateToken(username string, role string) string {
 	claims := jwt.MapClaims{
 		"username": username,
 		"role":     role,
+		"id":		id,
 	}
 
 	// Gera o token a partir dos claims, assina em HS256
@@ -47,7 +53,18 @@ func GenerateToken(username string, role string) string {
 }
 
 func CreateUser(username string, password string, role string) {
-	var newUser user = user{Username: username, Password: password, Role: role}
+	var id = 0
+	switch role{
+		case "user":
+			id = services.MaiorIDCliente() + 1
+			
+		case "medico":
+			id = services.MaiorIDMedico() + 1
+			
+		default:
+	}
+	
+	var newUser user = user{Username: username, Password: password, Role: role, ID: id}
 	users = append(users, newUser)
 }
 
@@ -57,8 +74,9 @@ func LogUser(username string, password string) (string, bool) {
 		if a.Username == username && a.Password == password {
 			// Obtem o cargo do usuario para gerar o token
 			var role = a.Role
+			var id = a.ID
 			// Gera o token a partir do usuario dado
-			sign_token := GenerateToken(username, role)
+			sign_token := GenerateToken(username, role, id)
 
 			// Se o token nao for nulo, retorna ao usuario
 			if sign_token != "" {

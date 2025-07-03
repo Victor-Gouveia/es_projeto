@@ -111,3 +111,20 @@ func ListarDocumentosCliente(clienteID int) []Documento { // implementado
 	//fmt.Printf("Buscando documentos para o cliente %d...\n", clienteID)
 	return docsCliente
 }
+
+// MaiorIDCliente percorre o mapa de clientes e retorna o maior ID encontrado.
+func MaiorIDCliente() int {
+	// caso o mapa estar vazio.
+	if len(clientes) == 0 {
+		return 0
+	}
+
+	maiorID := 0
+	// itera apenas sobre as chaves do mapa 'clientes'.
+	for id := range clientes {
+		if id > maiorID {
+			maiorID = id
+		}
+	}
+	return maiorID
+}

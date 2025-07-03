@@ -27,11 +27,27 @@ func LerDocumento(id int) (Documento, bool) {
 	return d, ok
 }
 
-func AtualizarDocumento(id int, conteudo string) bool {
-	if d, ok := documentos[id]; ok {
-		d.Conteudo = conteudo
-		documentos[id] = d
-		//fmt.Printf("Médico atualizou o documento %d.\n", id)
+func AtualizarDocumento(id int, dadosAtualizados Documento) bool {
+	if _, ok := documentos[id]; ok {
+		// usa new_* para garantir que so atualizara espacos preenchidos
+		// se nao fizer assim ele deixa espacos em branco
+		// nao deve alterar o id
+		var new_doc = documentos[id]
+		if dadosAtualizados.AtendimentoID != 0 {
+			new_doc.AtendimentoID = dadosAtualizados.AtendimentoID
+		}
+		if dadosAtualizados.Conteudo != "" {
+			new_doc.Conteudo = dadosAtualizados.Conteudo
+		}
+		if dadosAtualizados.DataEmissao != "" {
+			new_doc.DataEmissao = dadosAtualizados.DataEmissao
+		}
+		if dadosAtualizados.Tipo != "" {
+			new_doc.Tipo = dadosAtualizados.Tipo
+		}
+
+		documentos[id] = new_doc
+		//fmt.Printf("Dados do atendimento %d atualizados.\n", id)
 		return true
 	}
 	return false
