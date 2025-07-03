@@ -1,0 +1,29 @@
+# Define a versão da especificação do Compose.
+version: '3.8'
+
+services:
+  # O nome do nosso serviço. Por enquanto simplesmente 'app'
+  app:
+    # Nome da imagem que será construída. (tag -t)
+    image: api-hospital
+    
+    # Define o nome do container. (--name)
+    container_name: meu-container-go
+    
+    # Instrução para construir a imagem.
+    # O Docker Compose deve procurar o Dockerfile no diretório atual.
+    build: .
+    
+    # Mapeamento de portas (HOST:CONTAINER) (-p).
+    ports:
+      - "8080:8080" # Mapeia a porta 8080 do host para a 8080 do container.
+
+    # 'unless-stopped': reinicia o container automaticamente, a menos que tenha sido
+    # parado manualmente pelo usuário.
+    restart: unless-stopped
+
+# Define redes 'internas' se precisar que seus containers
+# conversem entre si de forma isolada.
+# Por agora inutilizada, mantida aqui para referencia.
+# networks:
+#   gonet:

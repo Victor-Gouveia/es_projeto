@@ -1,11 +1,10 @@
-module 0.0.0.0/engsoft
+module engsoft
 
 require github.com/gin-gonic/gin v1.10.1
 
-replace 0.0.0.0/auth => ./auth
+require github.com/golang-jwt/jwt/v5 v5.2.2
 
 require (
-	0.0.0.0/auth v0.0.0-00010101000000-000000000000 // indirect
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect

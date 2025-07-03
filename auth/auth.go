@@ -1,7 +1,14 @@
 package auth
+
 // pacote utilizado para todas as operações relacionadas
 // com autenticação de usuário, geração e checagem de token
-import  "github.com/golang-jwt/jwt/v5"
+import (
+	"slices"
+
+	"github.com/golang-jwt/jwt/v5"
+
+	"engsoft/services"
+)
 
 // chave secreta para criptografia do token
 var secret = "chave_secreta"
@@ -10,24 +17,27 @@ var secret = "chave_secreta"
 type user struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Role 	 string	`json:"role"`
+	Role     string `json:"role"`
+	ID       int    `json:"id"`
 }
 
 // lista de usuarios "hard-coded"
 var users = []user{
-	{Username: "test", Password: "test", Role: ""},
-	{Username: "admin", Password: "admin", Role: "admin"},
+	{Username: "test", Password: "test", Role: "user", ID: 1},			// "João Silva"
+	{Username: "atende", Password: "atende", Role: "atende"},
+	{Username: "medico", Password: "medico", Role: "medico", ID: 92}, 	// "Dra. Lucia Ferreira"
+	{Username: "gerent", Password: "gerent", Role: "gerent"},
 }
 
-
-func GenerateToken(username string, role string) string {
+func GenerateToken(username string, role string, id int) string {
 	// Faz os claims pelo jwt para criar o token com eles
 	// OBS: Idealmente teria a data de expiracao do token,
 	// mas nao coloquei para simplificar implementação e
 	// testes
 	claims := jwt.MapClaims{
 		"username": username,
-		"role":    role,
+		"role":     role,
+		"id":		id,
 	}
 
 	// Gera o token a partir dos claims, assina em HS256
@@ -42,15 +52,31 @@ func GenerateToken(username string, role string) string {
 	return tokenString
 }
 
-func LogUser(username string, password string) (string, bool) {
+func CreateUser(username string, password string, role string) {
+	var id = 0
+	switch role{
+		case "user":
+			id = services.MaiorIDCliente() + 1
+			
+		case "medico":
+			id = services.MaiorIDMedico() + 1
+			
+		default:
+	}
+	
+	var newUser user = user{Username: username, Password: password, Role: role, ID: id}
+	users = append(users, newUser)
+}
 
-// Loop para procurar usuario e senha corretos
+func LogUser(username string, password string) (string, bool) {
+	// Loop para procurar usuario e senha corretos
 	for _, a := range users {
 		if a.Username == username && a.Password == password {
 			// Obtem o cargo do usuario para gerar o token
-			var role = a.Role;
+			var role = a.Role
+			var id = a.ID
 			// Gera o token a partir do usuario dado
-			sign_token := GenerateToken(username, role)
+			sign_token := GenerateToken(username, role, id)
 
 			// Se o token nao for nulo, retorna ao usuario
 			if sign_token != "" {
@@ -64,7 +90,8 @@ func LogUser(username string, password string) (string, bool) {
 	return "user not found or wrong password", false
 }
 
-func CheckToken(tokenString string, role string) (string, bool) {
+// usando array "roles" pois havera acoes que podem ter permissao de mais de um tipo de usuario (exemplo: )
+func CheckToken(tokenString string, roles []string) (string, bool) {
 	// Usa jwt.Parse para obter as informacoes do token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -89,7 +116,7 @@ func CheckToken(tokenString string, role string) (string, bool) {
 			return "role sign not valid", false
 		}
 		// Se precisar de cargo e nao tiver, retorna que nao esta autorizado
-		if tknRole != role && role != "" {
+		if slices.Contains(roles, tknRole) && len(roles) > 0 {
 			return "token does not have required role", false
 		}
 		// Estando tudo ok, retorna que a checagem deu certo
