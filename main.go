@@ -55,8 +55,15 @@ func main() {
 	router.POST("/documentos", postDoc)
 	router.POST("/medicos", postMedico)
 	//PUT
-
+	router.PUT("/clientes/:id", putCliente)
+	router.PUT("/medicos/:id", putMedico)
+	router.PUT("/atendimentos/:id", putAtend)
+	//router.PUT("/documentos/:id", putDoc)
 	//DELETE
+	router.DELETE("/clientes/:id", delCliente)
+	router.DELETE("/medicos/:id", delMedico)
+	router.DELETE("/atendimentos/:id", delAtend)
+	//router.DELETE("/documentos/:id", delDoc)
 
 	// roda o servidor localmente
 	router.Run("localhost:8080")
@@ -106,6 +113,41 @@ func postCliente(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newCliente)
 }
 
+func putCliente(c *gin.Context) {
+	id := c.Param("id")
+	c_id, err := strconv.Atoi(id)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "client id not valid"})
+		return
+	}
+	var newCliente services.Cliente
+	if err := c.BindJSON(&newCliente); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "failed to obtain client"})
+		return
+	}
+
+	if !services.AtualizarCliente(c_id, newCliente) {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "client not found"})
+		return
+	}
+	c.IndentedJSON(http.StatusOK, newCliente)
+}
+
+func delCliente(c *gin.Context) {
+	id := c.Param("id")
+
+	c_id, err := strconv.Atoi(id)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "client id not valid"})
+		return
+	}
+	if !services.DeletarCliente(c_id) {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "failed to delete client", "id": c_id})
+		return
+	}
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "client deleted successfully", "id": c_id})
+}
+
 // Funcao para listar clientes
 func getMedicos(c *gin.Context) {
 	var medicos = services.ListarMedicos()
@@ -143,6 +185,42 @@ func postMedico(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusCreated, newMedico)
+}
+
+func putMedico(c *gin.Context) {
+	id := c.Param("id")
+	m_id, err := strconv.Atoi(id)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "medic id not valid"})
+		return
+	}
+
+	var newMedico services.Medico
+	if err := c.BindJSON(&newMedico); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "failed to obtain medic"})
+		return
+	}
+
+	if !services.AtualizarMedico(m_id, newMedico) {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "failed to update medic", "id": m_id})
+		return
+	}
+	c.IndentedJSON(http.StatusOK, newMedico)
+}
+
+func delMedico(c *gin.Context) {
+	id := c.Param("id")
+
+	m_id, err := strconv.Atoi(id)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "client id not valid"})
+		return
+	}
+	if !services.DeletarMedico(m_id) {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "failed to delete medic", "id": m_id})
+		return
+	}
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "medic deleted successfully", "id": m_id})
 }
 
 // funcoes para atendimentos
@@ -188,6 +266,41 @@ func getAtendsMedico(c *gin.Context) {
 	}
 	var atendimentos = services.LerAtendimentosMedico(m_id)
 	c.IndentedJSON(http.StatusOK, atendimentos)
+}
+
+func putAtend(c *gin.Context) {
+	id := c.Param("id")
+	a_id, err := strconv.Atoi(id)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "appointment id not valid"})
+		return
+	}
+	var newAtend services.Atendimento
+	if err := c.BindJSON(&newAtend); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "failed to obtain appointment"})
+		return
+	}
+
+	if !services.AtualizarAtendimento(a_id, newAtend) {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "appointment not found"})
+		return
+	}
+	c.IndentedJSON(http.StatusOK, newAtend)
+}
+
+func delAtend(c *gin.Context) {
+	id := c.Param("id")
+
+	a_id, err := strconv.Atoi(id)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "appointment id not valid"})
+		return
+	}
+	if !services.DeletarAtendimento(a_id) {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "failed to delete appointment", "id": a_id})
+		return
+	}
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "appointment deleted successfully", "id": a_id})
 }
 
 // cria um documento

@@ -1,4 +1,3 @@
-// medico_ops.go
 package services
 
 import (
@@ -6,73 +5,66 @@ import (
 	"fmt"
 )
 
-// --- Use Case: Gerenciar Documentos (CRUD) ---
-
-// CriarDocumento adiciona um novo documento com ID manual.
-func CriarDocumento(d Documento) error {
-	if d.ID == 0 {
-		return errors.New("ID do documento não pode ser 0")
+// CriarMedico adiciona um novo médico ao sistema.
+func CriarMedico(m Medico) error {
+	if m.ID == 0 {
+		return errors.New("ID do médico não pode ser 0")
 	}
-	if _, existe := documentos[d.ID]; existe {
-		return fmt.Errorf("documento com ID %d já existe", d.ID)
+	if _, existe := medicos[m.ID]; existe {
+		return fmt.Errorf("médico com ID %d já existe", m.ID)
 	}
 
-	documentos[d.ID] = d
-	fmt.Printf("Médico criou documento '%s' (ID: %d).\n", d.Tipo, d.ID)
+	medicos[m.ID] = m
+	//fmt.Printf("Gerente cadastrou o(a) médico(a) '%s' (ID: %d).\n", m.Nome, m.ID)
 	return nil
 }
 
-func LerDocumento(id int) (Documento, bool) {
-	d, ok := documentos[id]
-	return d, ok
+// LerMedico busca um médico pelo seu ID.
+func LerMedico(id int) (Medico, bool) {
+	m, ok := medicos[id]
+	return m, ok
 }
 
-func AtualizarDocumento(id int, conteudo string) bool {
-	if d, ok := documentos[id]; ok {
-		d.Conteudo = conteudo
-		documentos[id] = d
-		fmt.Printf("Médico atualizou o documento %d.\n", id)
-		return true
-	}
-	return false
-}
-
-func DeletarDocumento(id int) bool {
-	if _, ok := documentos[id]; ok {
-		delete(documentos, id)
-		fmt.Printf("Médico deletou o documento %d.\n", id)
-		return true
-	}
-	return false
-}
-
-func ListarDocumentos() []Documento { // implementado
-	// Cria um slice (lista) para armazenar os documentos.
-	// A capacidade inicial é definida como o tamanho do mapa para otimizar a performance.
-	listaDocumentos := make([]Documento, 0, len(documentos))
-
-	// Itera sobre os valores do mapa 'documentos'.
-	// O '_' é usado para ignorar a chave (ID do documento), pois só queremos o objeto.
-	for _, documento := range documentos {
-		// Adiciona cada documento encontrado à lista.
-		listaDocumentos = append(listaDocumentos, documento)
-	}
-
-	// Retorna a lista completa.
-	return listaDocumentos
-}
-
-func ListarDocumentosMedico(medicoID int) []Documento { // implementado
-	var docsMed []Documento
-	for _, atendimento := range atendimentos {
-		if atendimento.MedicoID == medicoID {
-			for _, doc := range documentos {
-				if doc.AtendimentoID == atendimento.ID {
-					docsMed = append(docsMed, doc)
-				}
-			}
+// AtualizarMedico atualiza as informações de um médico existente.
+func AtualizarMedico(id int, dadosAtualizados Medico) bool {
+	if _, ok := medicos[id]; ok {
+		// usa new_* para garantir que so atualizara espacos em branco
+		// nao deve alterar o id do usuario
+		var new_med = medicos[id]
+		if dadosAtualizados.Nome != "" {
+			new_med.Nome = dadosAtualizados.Nome
 		}
+		if dadosAtualizados.Telefone != "" {
+			new_med.Telefone = dadosAtualizados.Telefone
+		}
+		if dadosAtualizados.CRM != "" {
+			new_med.CRM = dadosAtualizados.CRM
+		}
+		if dadosAtualizados.Especialidade != "" {
+			new_med.Especialidade = dadosAtualizados.Especialidade
+		}
+		medicos[id] = new_med
+		//fmt.Printf("Dados do medico %d atualizados.\n", id)
+		return true
 	}
-	fmt.Printf("Buscando documentos para o medico %d...\n", medicoID)
-	return docsMed
+	return false
+}
+
+// DeletarMedico remove um médico do sistema.
+func DeletarMedico(id int) bool {
+	if _, ok := medicos[id]; ok {
+		delete(medicos, id)
+		//fmt.Printf("Medico %d deletado com sucesso.\n", id)
+		return true
+	}
+	return false
+}
+
+// ListarTodosMedicos retorna uma lista com todos os médicos cadastrados.
+func ListarMedicos() []Medico {
+	listaMedicos := make([]Medico, 0, len(medicos))
+	for _, medico := range medicos {
+		listaMedicos = append(listaMedicos, medico)
+	}
+	return listaMedicos
 }

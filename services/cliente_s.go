@@ -19,7 +19,7 @@ func CriarCliente(c Cliente) error { // implementado
 	}
 
 	clientes[c.ID] = c
-	fmt.Printf("Cliente '%s' (ID: %d) criado com sucesso.\n", c.Nome, c.ID)
+	//fmt.Printf("Cliente '%s' (ID: %d) criado com sucesso.\n", c.Nome, c.ID)
 	return nil
 }
 
@@ -46,10 +46,23 @@ func ListarClientes() []Cliente { // implementado
 
 func AtualizarCliente(id int, dadosAtualizados Cliente) bool {
 	if _, ok := clientes[id]; ok {
-		dadosAtualizados.ID = id
-		clientes[id] = dadosAtualizados
-		fmt.Printf("Dados do cliente %d atualizados.\n", id)
-		EnviarDadosDoCliente(dadosAtualizados)
+		// usa new_user para garantir que so atualizara espacos em branco
+		// nao deve alterar o id do usuario
+		var new_user = clientes[id]
+		if dadosAtualizados.Nome != "" {
+			new_user.Nome = dadosAtualizados.Nome
+		}
+		if dadosAtualizados.Email != "" {
+			new_user.Email = dadosAtualizados.Email
+		}
+		if dadosAtualizados.Telefone != "" {
+			new_user.Telefone = dadosAtualizados.Telefone
+		}
+		if dadosAtualizados.Historico != "" {
+			new_user.Historico = dadosAtualizados.Historico
+		}
+		clientes[id] = new_user
+		//fmt.Printf("Dados do cliente %d atualizados.\n", id)
 		return true
 	}
 	return false
@@ -58,15 +71,10 @@ func AtualizarCliente(id int, dadosAtualizados Cliente) bool {
 func DeletarCliente(id int) bool {
 	if _, ok := clientes[id]; ok {
 		delete(clientes, id)
-		fmt.Printf("Cliente %d deletado com sucesso.\n", id)
+		//fmt.Printf("Cliente %d deletado com sucesso.\n", id)
 		return true
 	}
 	return false
-}
-
-// --- Use Case: Enviar Dados do Cliente (<<extends>> Gerenciar Conta) ---
-func EnviarDadosDoCliente(c Cliente) {
-	fmt.Printf(">> [Extensão] Enviando dados atualizados do cliente '%s' para sistemas externos...\n", c.Nome)
 }
 
 // --- Use Case: Solicitar Atendimento ---
@@ -84,7 +92,7 @@ func SolicitarAtendimento(a Atendimento) error { // implementado
 	// Define o status padrão para uma solicitação
 	a.Status = "Solicitado"
 	atendimentos[a.ID] = a
-	fmt.Printf("Atendimento (ID: %d) solicitado pelo cliente %d.\n", a.ID, a.ClienteID)
+	//fmt.Printf("Atendimento (ID: %d) solicitado pelo cliente %d.\n", a.ID, a.ClienteID)
 	return nil
 }
 
@@ -100,6 +108,6 @@ func ListarDocumentosCliente(clienteID int) []Documento { // implementado
 			}
 		}
 	}
-	fmt.Printf("Buscando documentos para o cliente %d...\n", clienteID)
+	//fmt.Printf("Buscando documentos para o cliente %d...\n", clienteID)
 	return docsCliente
 }
