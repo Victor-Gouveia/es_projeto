@@ -1,5 +1,5 @@
 # Define golang 1.22 como builder
-FROM golang:1.22-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 # Define o diretório de trabalho do container
 WORKDIR /app
