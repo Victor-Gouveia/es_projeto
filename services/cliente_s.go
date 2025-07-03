@@ -9,7 +9,7 @@ import (
 // --- Use Case: Gerenciar Conta de Cliente (CRUD) ---
 
 // CriarCliente adiciona um cliente com um ID definido manualmente.
-func CriarCliente(c Cliente) error {
+func CriarCliente(c Cliente) error { // implementado
 	// Validação: Garante que um ID foi fornecido e não está em uso.
 	if c.ID == 0 {
 		return errors.New("ID do cliente não pode ser 0")
@@ -24,13 +24,13 @@ func CriarCliente(c Cliente) error {
 }
 
 // LerCliente, AtualizarCliente, DeletarCliente, etc. permanecem os mesmos...
-func LerCliente(id int) (Cliente, bool) {
+func LerCliente(id int) (Cliente, bool) { // implementado
 	c, ok := clientes[id]
 	return c, ok
 }
 
 // ListarClientes retorna uma lista de todos os clientes cadastrados.
-func ListarClientes() []Cliente {
+func ListarClientes() []Cliente { // implementado
 	// Cria um slice para armazenar os clientes.
 	// O segundo argumento '0' é o tamanho inicial e o terceiro 'len(clientes)' é a capacidade inicial,
 	// o que é uma pequena otimização.
@@ -71,7 +71,7 @@ func EnviarDadosDoCliente(c Cliente) {
 
 // --- Use Case: Solicitar Atendimento ---
 // O cliente agora "solicita" fornecendo os dados do atendimento, incluindo o ID desejado.
-func SolicitarAtendimento(a Atendimento) error {
+func SolicitarAtendimento(a Atendimento) error { // implementado
 	if a.ID == 0 {
 		return errors.New("ID do atendimento não pode ser 0")
 	}
@@ -89,7 +89,7 @@ func SolicitarAtendimento(a Atendimento) error {
 }
 
 // --- Use Case: Visualizar Documentos ---
-func VisualizarDocumentos(clienteID int) []Documento {
+func ListarDocumentosCliente(clienteID int) []Documento { // implementado
 	var docsCliente []Documento
 	for _, atendimento := range atendimentos {
 		if atendimento.ClienteID == clienteID {

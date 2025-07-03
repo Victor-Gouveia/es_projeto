@@ -14,6 +14,50 @@ func LerAtendimento(id int) (Atendimento, bool) {
 	return a, ok
 }
 
+// --- Use Case: Visualizar Atendimentos ---
+// (Usado por Atendente e Gerente)
+func ListarAtendimentos() []Atendimento { // implementado
+	var lista []Atendimento
+	for _, a := range atendimentos {
+		lista = append(lista, a)
+	}
+	return lista
+}
+
+func LerAtendimentosCliente(c_id int) []Atendimento { // implementado
+	// Cria uma lista para armazenar os atendimentos encontrados.
+	var atendCliente []Atendimento
+
+	// Itera sobre todos os atendimentos no mapa.
+	for _, atendimento := range atendimentos {
+		// Se o ID do cliente no atendimento for igual ao ID procurado...
+		if atendimento.ClienteID == c_id {
+			// ...adiciona o atendimento à lista.
+			atendCliente = append(atendCliente, atendimento)
+		}
+	}
+
+	// Retorna a lista de atendimentos encontrados (pode estar vazia se nenhum for encontrado).
+	return atendCliente
+}
+
+func LerAtendimentosMedico(m_id int) []Atendimento { // implementado
+	// Cria uma lista para armazenar os atendimentos encontrados.
+	var atendCliente []Atendimento
+
+	// Itera sobre todos os atendimentos no mapa.
+	for _, atendimento := range atendimentos {
+		// Se o ID do cliente no atendimento for igual ao ID procurado...
+		if atendimento.MedicoID == m_id {
+			// ...adiciona o atendimento à lista.
+			atendCliente = append(atendCliente, atendimento)
+		}
+	}
+
+	// Retorna a lista de atendimentos encontrados (pode estar vazia se nenhum for encontrado).
+	return atendCliente
+}
+
 // AtualizarAtendimento (Update) atualiza um atendimento existente.
 func AtualizarAtendimento(id int, status string, medicoID int) bool {
 	if a, ok := atendimentos[id]; ok {
@@ -36,13 +80,4 @@ func CancelarAtendimento(id int) bool {
 	return false
 }
 
-// --- Use Case: Visualizar Atendimentos ---
-// (Usado por Atendente e Gerente)
-func VisualizarTodosAtendimentos() []Atendimento {
-	var lista []Atendimento
-	for _, a := range atendimentos {
-		lista = append(lista, a)
-	}
-	fmt.Println("Visualizando todos os atendimentos no sistema...")
-	return lista
-}
+

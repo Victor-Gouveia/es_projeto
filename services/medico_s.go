@@ -4,7 +4,6 @@ package services
 import (
 	"errors"
 	"fmt"
-	"time"
 )
 
 // --- Use Case: Gerenciar Documentos (CRUD) ---
@@ -18,7 +17,6 @@ func CriarDocumento(d Documento) error {
 		return fmt.Errorf("documento com ID %d já existe", d.ID)
 	}
 
-	d.DataEmissao = time.Now()
 	documentos[d.ID] = d
 	fmt.Printf("Médico criou documento '%s' (ID: %d).\n", d.Tipo, d.ID)
 	return nil
@@ -48,15 +46,33 @@ func DeletarDocumento(id int) bool {
 	return false
 }
 
-// --- Use Case: Visualizar Atendimentos ---
-// O médico visualiza apenas os atendimentos atribuídos a ele.
-func VisualizarAtendimentosMedico(medicoID int) []Atendimento {
-	var lista []Atendimento
-	for _, a := range atendimentos {
-		if a.MedicoID == medicoID {
-			lista = append(lista, a)
+func ListarDocumentos() []Documento { // implementado
+	// Cria um slice (lista) para armazenar os documentos.
+	// A capacidade inicial é definida como o tamanho do mapa para otimizar a performance.
+	listaDocumentos := make([]Documento, 0, len(documentos))
+
+	// Itera sobre os valores do mapa 'documentos'.
+	// O '_' é usado para ignorar a chave (ID do documento), pois só queremos o objeto.
+	for _, documento := range documentos {
+		// Adiciona cada documento encontrado à lista.
+		listaDocumentos = append(listaDocumentos, documento)
+	}
+
+	// Retorna a lista completa.
+	return listaDocumentos
+}
+
+func ListarDocumentosMedico(medicoID int) []Documento { // implementado
+	var docsMed []Documento
+	for _, atendimento := range atendimentos {
+		if atendimento.MedicoID == medicoID {
+			for _, doc := range documentos {
+				if doc.AtendimentoID == atendimento.ID {
+					docsMed = append(docsMed, doc)
+				}
+			}
 		}
 	}
-	fmt.Printf("Médico %d visualizando seus atendimentos...\n", medicoID)
-	return lista
+	fmt.Printf("Buscando documentos para o medico %d...\n", medicoID)
+	return docsMed
 }
