@@ -19,8 +19,11 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app/main .
 
 
-# Decidiu usar 'alpine' por ser uma imagem base mínima.
+# Decidiu usar 'alpine' por ser uma imagem base mínima. Versão fixada para não causar conflitos
 FROM alpine:3.22.0
+
+# Instala o curl para testes no container
+RUN apk --no-cache add curl
 
 # Define o diretório de trabalho
 WORKDIR /app
