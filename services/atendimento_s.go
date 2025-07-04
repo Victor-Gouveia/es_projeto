@@ -1,7 +1,30 @@
 // atendimento.go
 package services
 
-//import "fmt"
+import "fmt"
+import "errors"
+
+// --- Use Case: Solicitar Atendimento ---
+// O cliente agora "solicita" fornecendo os dados do atendimento, incluindo o ID desejado.
+func SolicitarAtendimento(a Atendimento) error { // implementado
+	if a.ID == 0 {
+		return errors.New("ID do atendimento não pode ser 0")
+	}
+	if _, existe := atendimentos[a.ID]; existe {
+		return fmt.Errorf("atendimento com ID %d já existe", a.ID)
+	}
+	if _, ok := LerCliente(a.ClienteID); !ok {
+		return fmt.Errorf("cliente com ID %d nao encontrado", a.ClienteID)
+	}
+	if _, ok := LerMedico(a.MedicoID); !ok {
+		return fmt.Errorf("medico com ID %d nao encontrado", a.MedicoID)
+	}
+	// Define o status padrão para uma solicitação
+	a.Status = "Solicitado"
+	atendimentos[a.ID] = a
+	//fmt.Printf("Atendimento (ID: %d) solicitado pelo cliente %d.\n", a.ID, a.ClienteID)
+	return nil
+}
 
 // LerAtendimento (Read) busca um atendimento pelo ID.
 func LerAtendimento(id int) (Atendimento, bool) {

@@ -52,8 +52,8 @@ func main() {
 	router.DELETE("/atendimentos/:id", delAtend)
 	router.DELETE("/documentos/:id", delDoc)
 
-	// roda o servidor localmente
-	router.Run("localhost:8080")
+	// roda o servidor ouvindo todos os ips
+	router.Run("0.0.0.0:8080")
 
 	// OBS: Existe um meio de testar o token ao receber uma rota,
 	// mas por agora (12/06) nao irei fazer isso
@@ -136,7 +136,7 @@ func putCliente(c *gin.Context) {
 }
 
 func delCliente(c *gin.Context) {
-	if !checkToken(c, []string{"user", "atende", "gerent"}) { // medicos nao podem apagar dados do cliente
+	if !checkToken(c, []string{"user", "gerent"}) { // medicos e atendentes nao podem apagar dados do cliente
 		return
 	}
 	id := c.Param("id")
@@ -155,7 +155,7 @@ func delCliente(c *gin.Context) {
 
 // Funcao para listar clientes
 func getMedicos(c *gin.Context) {
-	if !checkToken(c, []string{"user", "atende", "medico", "gerent"}) { // qualquer um pode pesquisar medicos (passivel de alteracao)
+	if !checkToken(c, []string{}) { // qualquer um pode pesquisar medicos (passivel de alteracao)
 		return
 	}
 	var medicos = services.ListarMedicos()
@@ -164,7 +164,7 @@ func getMedicos(c *gin.Context) {
 
 // lista cliente pelo id
 func getMedicosID(c *gin.Context) {
-	if !checkToken(c, []string{"user", "atende", "medico", "gerent"}) { // qualquer um pode pesquisar medicos por id
+	if !checkToken(c, []string{}) { // qualquer um pode pesquisar medicos por id
 		return
 	}
 
@@ -379,7 +379,7 @@ func getDocs(c *gin.Context) {
 
 // lista documentos por id de cliente
 func getDocsCliente(c *gin.Context) {
-	if !checkToken(c, []string{"user", "atende", "medico", "gerent"}) { // qualquer um pode ver documentos pelo cliente
+	if !checkToken(c, []string{}) { // qualquer um pode ver documentos pelo cliente
 		return
 	}
 	id := c.Param("id")
@@ -458,6 +458,7 @@ type user_cred struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Role     string `json:"role"`
+	ID       int    `json:"id"`
 }
 
 // Funcao de autenticacao, vulgo login
@@ -490,7 +491,14 @@ func postAuthNew(c *gin.Context) {
 		return
 	}
 
-	auth.CreateUser(login.Username, login.Password, login.Role)
+	if checkToken(c, []string{"gerent"}) { // apenas gerentes podem criar contas de outros cargos
+		auth.CreateUser(login.Username, login.Password, login.Role, login.ID)
+		c.IndentedJSON(http.StatusOK, gin.H{"message": "user of role " + login.Role + " created successfully"})
+		return
+	}
+	// se nao for gerente, cria uma conta de usuario independente do que o usuario digitou
+	auth.CreateUser(login.Username, login.Password, "user", login.ID)
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "user created successfully"})
 
 }
 
@@ -507,7 +515,7 @@ func checkToken(c *gin.Context, roles []string) bool {
 	}
 
 	msg, ok := auth.CheckToken(tokenString, roles)
-	
+
 	if !ok {
 		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 	}

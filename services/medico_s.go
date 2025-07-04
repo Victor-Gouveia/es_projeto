@@ -68,18 +68,3 @@ func ListarMedicos() []Medico {
 	}
 	return listaMedicos
 }
-
-// MaiorIDMedico percorre o mapa de médicos e retorna o maior ID encontrado.
-func MaiorIDMedico() int {
-	if len(medicos) == 0 {
-		return 0
-	}
-	
-	maiorID := 0
-	for id := range medicos {
-		if id > maiorID {
-			maiorID = id
-		}
-	}
-	return maiorID
-}

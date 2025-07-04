@@ -16,6 +16,9 @@ func CriarDocumento(d Documento) error {
 	if _, existe := documentos[d.ID]; existe {
 		return fmt.Errorf("documento com ID %d já existe", d.ID)
 	}
+	if _, ok := LerAtendimento(d.AtendimentoID); !ok {
+		return fmt.Errorf("atendimento com ID %d não existe", d.AtendimentoID)
+	}
 
 	documentos[d.ID] = d
 	//fmt.Printf("Médico criou documento '%s' (ID: %d).\n", d.Tipo, d.ID)
@@ -25,6 +28,53 @@ func CriarDocumento(d Documento) error {
 func LerDocumento(id int) (Documento, bool) {
 	d, ok := documentos[id]
 	return d, ok
+}
+
+// --- Use Case: Visualizar Documentos ---
+func ListarDocumentos() []Documento { // implementado
+	// Cria um slice (lista) para armazenar os documentos.
+	// A capacidade inicial é definida como o tamanho do mapa para otimizar a performance.
+	listaDocumentos := make([]Documento, 0, len(documentos))
+
+	// Itera sobre os valores do mapa 'documentos'.
+	// O '_' é usado para ignorar a chave (ID do documento), pois só queremos o objeto.
+	for _, documento := range documentos {
+		// Adiciona cada documento encontrado à lista.
+		listaDocumentos = append(listaDocumentos, documento)
+	}
+
+	// Retorna a lista completa.
+	return listaDocumentos
+}
+
+func ListarDocumentosCliente(clienteID int) []Documento { // implementado
+	var docsCliente []Documento
+	for _, atendimento := range atendimentos {
+		if atendimento.ClienteID == clienteID {
+			for _, doc := range documentos {
+				if doc.AtendimentoID == atendimento.ID {
+					docsCliente = append(docsCliente, doc)
+				}
+			}
+		}
+	}
+	//fmt.Printf("Buscando documentos para o cliente %d...\n", clienteID)
+	return docsCliente
+}
+
+func ListarDocumentosMedico(medicoID int) []Documento { // implementado
+	var docsMed []Documento
+	for _, atendimento := range atendimentos {
+		if atendimento.MedicoID == medicoID {
+			for _, doc := range documentos {
+				if doc.AtendimentoID == atendimento.ID {
+					docsMed = append(docsMed, doc)
+				}
+			}
+		}
+	}
+	//fmt.Printf("Buscando documentos para o medico %d...\n", medicoID)
+	return docsMed
 }
 
 func AtualizarDocumento(id int, dadosAtualizados Documento) bool {
@@ -60,35 +110,4 @@ func DeletarDocumento(id int) bool {
 		return true
 	}
 	return false
-}
-
-func ListarDocumentos() []Documento { // implementado
-	// Cria um slice (lista) para armazenar os documentos.
-	// A capacidade inicial é definida como o tamanho do mapa para otimizar a performance.
-	listaDocumentos := make([]Documento, 0, len(documentos))
-
-	// Itera sobre os valores do mapa 'documentos'.
-	// O '_' é usado para ignorar a chave (ID do documento), pois só queremos o objeto.
-	for _, documento := range documentos {
-		// Adiciona cada documento encontrado à lista.
-		listaDocumentos = append(listaDocumentos, documento)
-	}
-
-	// Retorna a lista completa.
-	return listaDocumentos
-}
-
-func ListarDocumentosMedico(medicoID int) []Documento { // implementado
-	var docsMed []Documento
-	for _, atendimento := range atendimentos {
-		if atendimento.MedicoID == medicoID {
-			for _, doc := range documentos {
-				if doc.AtendimentoID == atendimento.ID {
-					docsMed = append(docsMed, doc)
-				}
-			}
-		}
-	}
-	//fmt.Printf("Buscando documentos para o medico %d...\n", medicoID)
-	return docsMed
 }
