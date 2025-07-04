@@ -63,6 +63,6 @@ var (
 	medicos = map[int]Medico{
 		91: {ID: 91, Nome: "Dr. Carlos Andrade", CRM: "RN 12345", Especialidade: "Cardiologia", Telefone: "84911112222"},
 		92: {ID: 92, Nome: "Dra. Lucia Ferreira", CRM: "RN 54321", Especialidade: "Ortopedia", Telefone: "84933334444"},
-		93: {ID: 93, Nome: "Dra. Marcia Lima", CRM: "RN 54321", Especialidade: "Clinico Geral", Telefone: "84933334444"},
+		93: {ID: 93, Nome: "Dra. Marcia Lima", CRM: "RN 54123", Especialidade: "Clinico Geral", Telefone: "84933334444"},
 	}
 )

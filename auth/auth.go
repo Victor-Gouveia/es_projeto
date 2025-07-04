@@ -6,8 +6,6 @@ import (
 	"slices"
 
 	"github.com/golang-jwt/jwt/v5"
-
-	"engsoft/services"
 )
 
 // chave secreta para criptografia do token
@@ -52,22 +50,16 @@ func GenerateToken(username string, role string, id int) string {
 	return tokenString
 }
 
-//var cert_roles = []string{"user", "atende", "medico", "gerent"} // lista de cargos para conferir ao criar novo usuario
+var cert_roles = []string{"user", "atende", "medico", "gerent"} // lista de cargos para conferir ao criar novo usuario
 
-func CreateUser(username string, password string, role string) {
-	var id = 0
-	switch role {
-	case "user":
-		id = services.MaiorIDCliente() + 1
-
-	case "medico":
-		id = services.MaiorIDMedico() + 1
-
-	default:
+func CreateUser(username string, password string, role string, id int) bool {
+	// conferindo se o cargo esta correto
+	if !slices.Contains(cert_roles, role) {
+		return false
 	}
-
 	var newUser user = user{Username: username, Password: password, Role: role, ID: id}
 	users = append(users, newUser)
+	return true
 }
 
 func LogUser(username string, password string) (string, bool) {
