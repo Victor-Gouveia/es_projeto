@@ -64,7 +64,8 @@ func main() {
 
 // Funcao para listar clientes
 func getClientes(c *gin.Context) {
-	if !checkToken(c, []string{}) { // qualquer um pode pesquisar clientes (passivel de alteracao)
+	if ok, msg := checkToken(c, []string{}); !ok{ // qualquer um pode pesquisar clientes (passivel de alteracao)
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 	var clientes = services.ListarClientes()
@@ -74,7 +75,8 @@ func getClientes(c *gin.Context) {
 // lista cliente pelo id
 func getClientesID(c *gin.Context) {
 
-	if !checkToken(c, []string{}) { // qualquer um pode pesquisar cliente por id
+	if ok, msg := checkToken(c, []string{}); !ok{ // qualquer um pode pesquisar cliente por id
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 	id := c.Param("id")
@@ -94,7 +96,8 @@ func getClientesID(c *gin.Context) {
 func postCliente(c *gin.Context) {
 	var newCliente services.Cliente
 
-	if !checkToken(c, []string{"user", "atende", "gerent"}) { // medicos nao podem enviar dados do cliente
+	if ok, msg := checkToken(c, []string{"user", "atende", "gerent"}); !ok{ // medicos nao podem enviar dados do cliente
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 
@@ -112,7 +115,8 @@ func postCliente(c *gin.Context) {
 }
 
 func putCliente(c *gin.Context) {
-	if !checkToken(c, []string{"user", "atende", "gerent"}) { // medicos nao podem atualizar dados do cliente
+	if ok, msg := checkToken(c, []string{"user", "atende", "gerent"}); !ok{ // medicos nao podem atualizar dados do cliente
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 
@@ -136,7 +140,8 @@ func putCliente(c *gin.Context) {
 }
 
 func delCliente(c *gin.Context) {
-	if !checkToken(c, []string{"user", "gerent"}) { // medicos e atendentes nao podem apagar dados do cliente
+	if ok, msg := checkToken(c, []string{"user", "gerent"}); !ok{ // medicos e atendentes nao podem apagar dados do cliente
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 	id := c.Param("id")
@@ -155,7 +160,8 @@ func delCliente(c *gin.Context) {
 
 // Funcao para listar clientes
 func getMedicos(c *gin.Context) {
-	if !checkToken(c, []string{}) { // qualquer um pode pesquisar medicos (passivel de alteracao)
+	if ok, msg := checkToken(c, []string{}); !ok{ // qualquer um pode pesquisar medicos (passivel de alteracao)
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 	var medicos = services.ListarMedicos()
@@ -164,7 +170,8 @@ func getMedicos(c *gin.Context) {
 
 // lista cliente pelo id
 func getMedicosID(c *gin.Context) {
-	if !checkToken(c, []string{}) { // qualquer um pode pesquisar medicos por id
+	if ok, msg := checkToken(c, []string{}); !ok{ // qualquer um pode pesquisar medicos por id
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 
@@ -186,7 +193,8 @@ func getMedicosID(c *gin.Context) {
 func postMedico(c *gin.Context) {
 	var newMedico services.Medico
 
-	if !checkToken(c, []string{"medico", "gerent"}) { // apenas medicos e gerentes podem enviar dados de medicos
+	if ok, msg := checkToken(c, []string{"medico", "gerent"}); !ok{ // apenas medicos e gerentes podem enviar dados de medicos
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 
@@ -204,7 +212,8 @@ func postMedico(c *gin.Context) {
 }
 
 func putMedico(c *gin.Context) {
-	if !checkToken(c, []string{"medico", "gerent"}) { // apenas medicos e gerentes podem alterar dados de medicos
+	if ok, msg := checkToken(c, []string{"medico", "gerent"}); !ok{ // apenas medicos e gerentes podem alterar dados de medicos
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 
@@ -229,7 +238,8 @@ func putMedico(c *gin.Context) {
 }
 
 func delMedico(c *gin.Context) {
-	if !checkToken(c, []string{"gerent"}) { // apenas gerentes podem deletar dados de medicos
+	if ok, msg := checkToken(c, []string{"gerent"}); !ok{ // apenas gerentes podem deletar dados de medicos
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 	id := c.Param("id")
@@ -248,7 +258,8 @@ func delMedico(c *gin.Context) {
 
 // funcoes para atendimentos
 func postAtend(c *gin.Context) {
-	if !checkToken(c, []string{"user", "atende", "gerent"}) { // medicos nao podem solicitar atendimentos (passivel de alteracao)
+	if ok, msg := checkToken(c, []string{"user", "atende", "gerent"}); !ok{ // medicos nao podem solicitar atendimentos (passivel de alteracao)
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 	var newAtend services.Atendimento
@@ -266,7 +277,8 @@ func postAtend(c *gin.Context) {
 
 // lista todos os atendimentos
 func getAtends(c *gin.Context) {
-	if !checkToken(c, []string{"atende", "gerent"}) { // apenas atendentes e gerentes podem ler todos os atendimentos
+	if ok, msg := checkToken(c, []string{"atende", "gerent"}); !ok{ // apenas atendentes e gerentes podem ler todos os atendimentos
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 
@@ -276,7 +288,8 @@ func getAtends(c *gin.Context) {
 
 // lista atendimentos por id de cliente
 func getAtendsCliente(c *gin.Context) {
-	if !checkToken(c, []string{"user", "atende", "gerent"}) { // apenas medicos nao podem ver atendimentos por cliente
+	if ok, msg := checkToken(c, []string{"user", "atende", "gerent"}); !ok{ // apenas medicos nao podem ver atendimentos por cliente
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 
@@ -292,7 +305,8 @@ func getAtendsCliente(c *gin.Context) {
 
 // lista atendimentos por id de medico
 func getAtendsMedico(c *gin.Context) {
-	if !checkToken(c, []string{"medico", "atende", "gerent"}) { // apenas usuarios nao podem ver atendimentos por medico
+	if ok, msg := checkToken(c, []string{"medico", "atende", "gerent"}); !ok{ // apenas usuarios nao podem ver atendimentos por medico
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 
@@ -307,7 +321,8 @@ func getAtendsMedico(c *gin.Context) {
 }
 
 func putAtend(c *gin.Context) {
-	if !checkToken(c, []string{"atende", "gerent"}) { // apenas atendentes e gerentes podem alterar atendimentos
+	if ok, msg := checkToken(c, []string{"atende", "gerent"}); !ok{ // apenas atendentes e gerentes podem alterar atendimentos
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 	id := c.Param("id")
@@ -330,7 +345,8 @@ func putAtend(c *gin.Context) {
 }
 
 func delAtend(c *gin.Context) {
-	if !checkToken(c, []string{"atende", "gerent"}) { // apenas atendentes e gerentes podem remover atendimentos
+	if ok, msg := checkToken(c, []string{"atende", "gerent"}); !ok{ // apenas atendentes e gerentes podem remover atendimentos
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 	id := c.Param("id")
@@ -349,7 +365,8 @@ func delAtend(c *gin.Context) {
 
 // cria um documento
 func postDoc(c *gin.Context) {
-	if !checkToken(c, []string{"medico", "gerent"}) { // apenas medicos e gerentes podem adicionar documentos
+	if ok, msg := checkToken(c, []string{"medico", "gerent"}); !ok{ // apenas medicos e gerentes podem adicionar documentos
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 
@@ -369,7 +386,8 @@ func postDoc(c *gin.Context) {
 
 // lista todos os documentos
 func getDocs(c *gin.Context) {
-	if !checkToken(c, []string{"medico", "gerent"}) { // apenas medicos e gerentes podem ver todos os documentos (passivel de alteracao)
+	if ok, msg := checkToken(c, []string{"medico", "gerent"}); !ok{ // apenas medicos e gerentes podem ver todos os documentos (passivel de alteracao)
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 
@@ -379,7 +397,8 @@ func getDocs(c *gin.Context) {
 
 // lista documentos por id de cliente
 func getDocsCliente(c *gin.Context) {
-	if !checkToken(c, []string{}) { // qualquer um pode ver documentos pelo cliente
+	if ok, msg := checkToken(c, []string{}); !ok{ // qualquer um pode ver documentos pelo cliente
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 	id := c.Param("id")
@@ -394,7 +413,8 @@ func getDocsCliente(c *gin.Context) {
 
 // lista documentos por id de medico
 func getDocsMedico(c *gin.Context) {
-	if !checkToken(c, []string{"atende", "medico", "gerent"}) { // apenas clientes nao podem ver documentos por medico
+	if ok, msg := checkToken(c, []string{"atende", "medico", "gerent"}); !ok{ // apenas clientes nao podem ver documentos por medico
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 	id := c.Param("id")
@@ -408,7 +428,8 @@ func getDocsMedico(c *gin.Context) {
 }
 
 func putDoc(c *gin.Context) {
-	if !checkToken(c, []string{"medico", "gerent"}) { // apenas medicos e gerentes podem alterar documentos
+	if ok, msg := checkToken(c, []string{"medico", "gerent"}); !ok{ // apenas medicos e gerentes podem alterar documentos
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 	id := c.Param("id")
@@ -431,7 +452,8 @@ func putDoc(c *gin.Context) {
 }
 
 func delDoc(c *gin.Context) {
-	if !checkToken(c, []string{"medico", "gerent"}) { // apenas medicos e gerentes podem remover documentos
+	if ok, msg := checkToken(c, []string{"medico", "gerent"}); !ok{ // apenas medicos e gerentes podem remover documentos
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
 		return
 	}
 	id := c.Param("id")
@@ -491,7 +513,7 @@ func postAuthNew(c *gin.Context) {
 		return
 	}
 
-	if checkToken(c, []string{"gerent"}) { // apenas gerentes podem criar contas de outros cargos
+	if ok, _ := checkToken(c, []string{"gerent"}); ok { // apenas gerentes podem criar contas de outros cargos
 		auth.CreateUser(login.Username, login.Password, login.Role, login.ID)
 		c.IndentedJSON(http.StatusOK, gin.H{"message": "user of role " + login.Role + " created successfully"})
 		return
@@ -504,21 +526,16 @@ func postAuthNew(c *gin.Context) {
 
 // Faz a checagem to token | Alteração: converter role string em roles string[],
 // pois tem funcoes que podem ser acessadas por mais de um cargo (24/06)
-func checkToken(c *gin.Context, roles []string) bool {
+func checkToken(c *gin.Context, roles []string) (bool, string) {
 	// Pega o token pelo header de autorizacao
 	tokenString := c.GetHeader("Authorization")
 
 	// Se nao tiver token, avisa que nao achou o token e retorna
 	if tokenString == "" {
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "token not found"})
-		return false
+		return false, "token not found"
 	}
 
 	msg, ok := auth.CheckToken(tokenString, roles)
 
-	if !ok {
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": msg})
-	}
-
-	return ok
+	return ok, msg
 }
