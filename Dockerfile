@@ -18,7 +18,6 @@ COPY . .
 # -o /app/main: Especifica que o arquivo de saída será chamado 'main' e estará no diretório '/app'.
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app/main .
 
-
 # Decidiu usar 'alpine' por ser uma imagem base mínima. Versão fixada para não causar conflitos
 FROM alpine:3.22.0
 
