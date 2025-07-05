@@ -2,7 +2,6 @@
 version: '3.8'
 
 services:
-  # O nome do nosso serviço. Por enquanto simplesmente 'app'
   app:
     # Nome da imagem que será construída. (tag -t)
     image: api-hospital
