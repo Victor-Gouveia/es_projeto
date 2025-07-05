@@ -8,4 +8,4 @@ Inicialmente, é necessário iniciar o ambiente da API, o que pode ser feito com
 ```bash
     docker-compose up -d --build
 ```
-Feito isso, a API deve estar funcionando. Para testar a API, é possível executar o arquivo `demo.sh` para executar um programa teste, ou executar os próprios testes por http, por meio da porta `8080`.
+Feito isso, a API deve estar funcionando. Para testar a API, é possível executar o arquivo `demo.sh` para rodar um programa teste, ou executar os próprios testes por http, por meio da porta `8080`.
