@@ -3,6 +3,7 @@ package auth
 // pacote utilizado para todas as operações relacionadas
 // com autenticação de usuário, geração e checagem de token
 import (
+	//"fmt" // usado para ver alguns erros no console
 	"slices"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -58,6 +59,7 @@ func CreateUser(username string, password string, role string, id int) bool {
 		return false
 	}
 	var newUser user = user{Username: username, Password: password, Role: role, ID: id}
+
 	users = append(users, newUser)
 	return true
 }
